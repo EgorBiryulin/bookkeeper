@@ -10,7 +10,7 @@ cursor = con.cursor()
 
 cursor.execute('CREATE TABLE IF NOT EXISTS expense(pk INTEGER, added_date TEXT, expense_date TEXT, category TEXT, amount REAL, comment TEXT)')
 
-expence1 = Expense((str(datetime.now())[:-6]), 'Пиво', 69.69, 'Пиво для Илюши')
+expence1 = Expense((str(datetime.now())[:-7]), 'Пиво', 69.69, 'Пиво для Илюши')
 print(expence1.pk)
 
 con.commit()
