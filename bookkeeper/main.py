@@ -11,7 +11,10 @@ cursor = con.cursor()
 cursor.execute('CREATE TABLE IF NOT EXISTS expense(pk INTEGER, added_date TEXT, expense_date TEXT, category TEXT, amount REAL, comment TEXT)')
 
 expence1 = Expense((str(datetime.now())[:-7]), 'Пиво', 69.69, 'Пиво для Илюши')
-print(expence1.pk)
+expence2 = Expense((str(datetime.now())[:-7]), 'Пиво', 69.69, 'Пиво для Илюши')
+
+SQLRepo.add(expence1)
+SQLRepo.add(expence2)
 
 con.commit()
 con.close()

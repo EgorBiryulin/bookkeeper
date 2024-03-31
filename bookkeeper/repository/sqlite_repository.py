@@ -17,12 +17,12 @@ class SQLiteRepository(AbstractRepository[T]):
         self.db_file = db_file
         self.table_name = cls.__name__.lower()
         self.fields = get_annotations(cls, eval_str=True)
-        self.fields.pop('pk')
+        #self.fields.pop('pk')
         self.cls_type: T = cls
 
     def add(self, obj: T) -> int:
         if getattr(obj, 'pk', None) != 0:
-            raise ValueError(f'trying to add object {obj} with filled `pk` attribute')
+            raise ValueError(f'trying to add object with filled `pk` attribute')
         names = ', '.join(self.fields.keys())
         p = ', '.join("?" * len(self.fields))
         values = [getattr(obj, x) for x in self.fields]
@@ -34,6 +34,9 @@ class SQLiteRepository(AbstractRepository[T]):
                 values
             )
             obj.pk = cur.lastrowid
+            cur.execute(f'UPDATE {self.table_name} SET pk = ? WHERE pk = ?',
+            [obj.pk, 0]
+            )
         con.commit()
         con.close()
         #return obj.pk
