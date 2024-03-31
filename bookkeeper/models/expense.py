@@ -2,24 +2,22 @@
 Описан класс, представляющий расходную операцию
 """
 
-from dataclasses import dataclass, field
-from datetime import datetime
-
+from dataclasses import dataclass
 
 @dataclass(slots=True)
-class Expense:
+class Expense():
     """
     Расходная операция.
-    amount - сумма
-    category - id категории расходов
-    expense_date - дата расхода
-    added_date - дата добавления в бд
-    comment - комментарий
     pk - id записи в базе данных
+    added_date - дата добавления в бд
+    expense_date - дата расхода
+    category - id категории расходов
+    amount - сумма
+    comment - комментарий
     """
-    amount: int
-    category: int
-    expense_date: datetime = field(default_factory=datetime.now)
-    added_date: datetime = field(default_factory=datetime.now)
+    pk: int
+    added_date: str
+    expense_date: str
+    category: str
+    amount: float
     comment: str = ''
-    pk: int = 0

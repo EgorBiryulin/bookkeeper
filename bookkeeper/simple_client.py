@@ -2,10 +2,10 @@
 Простой тестовый скрипт для терминала
 """
 
-from bookkeeper.models.category import Category
-from bookkeeper.models.expense import Expense
-from bookkeeper.repository.memory_repository import MemoryRepository
-from bookkeeper.utils import read_tree
+from bookkeeper.bookkeeper.models.category import Category
+from bookkeeper.bookkeeper.models.expense import Expense
+from bookkeeper.bookkeeper.repository.memory_repository import MemoryRepository
+from bookkeeper.bookkeeper.utils import read_tree
 
 cat_repo = MemoryRepository[Category]()
 exp_repo = MemoryRepository[Expense]()

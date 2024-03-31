@@ -1,4 +1,4 @@
-from bookkeeper.repository.memory_repository import MemoryRepository
+from bookkeeper.bookkeeper.repository.memory_repository import MemoryRepository
 
 import pytest
 
@@ -6,7 +6,7 @@ import pytest
 @pytest.fixture
 def custom_class():
     class Custom():
-        pk = 0
+        pk: int = 0
 
     return Custom
 
