@@ -3,6 +3,8 @@
 """
 
 from dataclasses import dataclass
+from datetime import datetime
+
 
 @dataclass(slots=True)
 class Expense():
@@ -21,3 +23,11 @@ class Expense():
     category: str
     amount: float
     comment: str = ''
+
+    def __init__(self, expense_date: str, category: str, amount: float, comment: str):
+        self.pk: int = 0
+        self.added_date = str(datetime.now())[:-6]
+        self.expense_date = expense_date
+        self.category = category
+        self.amount = amount
+        self.comment = comment

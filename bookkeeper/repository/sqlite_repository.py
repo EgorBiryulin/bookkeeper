@@ -36,7 +36,7 @@ class SQLiteRepository(AbstractRepository[T]):
             obj.pk = cur.lastrowid
         con.commit()
         con.close()
-        return obj.pk
+        #return obj.pk
 
     def get(self, pk: int) -> T | None:
         with sqlite3.connect(self.db_file) as con:
