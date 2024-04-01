@@ -52,9 +52,6 @@ class SQLiteRepository(AbstractRepository[T]):
         con.commit()
         con.close()
 
-        print(result)
-        print(list(self.fields.keys()))
-
         if result:
             result_obj: any = self.cls_type
             keys = list(self.fields.keys())
