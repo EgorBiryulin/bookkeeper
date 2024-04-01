@@ -3,11 +3,10 @@
 """
 
 from dataclasses import dataclass
-from datetime import datetime
 
 
 @dataclass(slots=True)
-class Expense():
+class Expense:
     """
     Расходная операция.
     pk - id записи в базе данных
@@ -22,12 +21,5 @@ class Expense():
     expense_date: str
     category: str
     amount: float
-    comment: str = ''
+    comment: str
 
-    def __init__(self, expense_date: str, category: str, amount: float, comment: str):
-        self.pk: int = 0
-        self.added_date = str(datetime.now())[:-7]
-        self.expense_date = expense_date
-        self.category = category
-        self.amount = amount
-        self.comment = comment

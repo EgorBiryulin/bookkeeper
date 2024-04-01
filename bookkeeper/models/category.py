@@ -19,8 +19,7 @@ class Category:
     parent: int | None = None
     pk: int = 0
 
-    def get_parent(self,
-                   repo: AbstractRepository['Category']) -> 'Category | None':
+    def get_parent(self,repo: AbstractRepository['Category']) -> 'Category | None':
         """
         Получить родительскую категорию в виде объекта Category
         Если метод вызван у категории верхнего уровня, возвращает None
@@ -99,7 +98,6 @@ class Category:
         ошибка (для sqlite3 - IntegrityError). При отсутствии проверки
         со стороны СУБД, результат, возможно, будет корректным, если исходные
         данные корректны за исключением сортировки. Если нет, то нет.
-        "Мусор на входе, мусор на выходе".
 
         Parameters
         ----------
