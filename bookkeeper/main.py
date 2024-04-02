@@ -1,21 +1,13 @@
 import sqlite3
 
+from PySide6 import QtWidgets
+
 from bookkeeper.models.budget import Budget
 from bookkeeper.models.category import Category
 from bookkeeper.repository.memory_repository import MemoryRepository
 from bookkeeper.repository.sqlite_repository import SQLiteRepository
 from bookkeeper.models.expense import Expense
-
-
-def countSpents(self, budget: Budget):
-    con = sqlite3.connect(self.db_file)
-    cursor = con.cursor()
-    cursor.execute(
-        f'SELECT SUM(amount) FROM {self.table_name} WHERE expense_date>{str(datetime.now() - budget.duration)[-8]}', )
-    sum = cursor.fetchone()[0]
-    con.commit()
-    con.close()
-    budget.moneyAmount = sum
+from bookkeeper.view.view import expenses_table
 
 
 SQLRepoExpense = SQLiteRepository('db_file_expense.db', Expense)
@@ -25,7 +17,8 @@ cursor.execute('CREATE TABLE IF NOT EXISTS expense(expense_date TEXT, category T
 con.commit()
 con.close()
 
-expense_database = SQLRepoExpense.get_all()
+expense_list = MemoryRepository()
+expense_list.init_db_at_start(SQLRepoExpense.get_all())
 
 SQLRepoBudget = SQLiteRepository('db_file_budget.db', Budget)
 
