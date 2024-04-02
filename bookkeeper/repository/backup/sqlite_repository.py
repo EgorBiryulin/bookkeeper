@@ -1,8 +1,6 @@
 """
-Модуль описывает репозиторий, работающий в sqlite
+Модуль описывает репозиторий, работающий в SQLite
 """
-# from itertools import count
-# from typing import Any
 from inspect import get_annotations
 from typing import Any
 import sqlite3
@@ -12,20 +10,22 @@ from bookkeeper.repository.abstract_repository import AbstractRepository, T
 
 class SQLiteRepository(AbstractRepository[T]):
     """
-    Репозиторий, работающий в работающий в sqlite. Хранит данные в файле .db
+    Репозиторий, работающий в работающий в SQLite
     """
 
     def __init__(self, db_file: str, cls: type) -> None:
         self.db_file = db_file
         self.table_name = cls.__name__.lower()
         self.fields = get_annotations(cls, eval_str=True)
-        if self.fields.__contains__('pk'):
+        try:
             self.fields.pop('pk')
+        except:
+            pass
         self.cls_type: T = cls
 
     def add(self, obj: T) -> int:
         if getattr(obj, 'pk', None) != 0:
-            raise ValueError(f'trying to add object {obj} with filled `pk` attribute')
+            raise ValueError(f'trying to add object with filled `pk` attribute')
         names = ', '.join(self.fields.keys())
         p = ', '.join("?" * len(self.fields))
         values = [getattr(obj, x) for x in self.fields]
@@ -45,26 +45,26 @@ class SQLiteRepository(AbstractRepository[T]):
         with sqlite3.connect(self.db_file) as con:
             cur = con.cursor()
             cur.execute('PRAGMA foreign_keys = ON')
-            cur.execute(f'SELECT * FROM {self.table_name} 'f'WHERE rowid = ?', (pk,))
+            cur.execute(f'SELECT * FROM {self.table_name} WHERE rowid = ?', (pk,))
             result = cur.fetchone()
         con.commit()
         con.close()
 
+        print(list(self.fields.keys()))
+        print(result)
+
         if result:
-            result_obj: any = self.cls_type()
-            try:
-                setattr(result_obj, 'pk', pk)
-            except:
-                pass
+            result_obj = self.cls_type
+            setattr(result_obj, 'pk', pk)
             keys = list(self.fields.keys())
-            for i in range(len(keys)):
+            for i in range(len(result)):
                 setattr(result_obj, keys[i], result[i])
             return result_obj
         else:
             return None
 
     def get_all(self, where: dict[str, Any] | None = None) -> list[T]:
-        result = list()
+        object_list = []
         if where is None:
             with sqlite3.connect(self.db_file) as con:
                 cur = con.cursor()
@@ -75,8 +75,8 @@ class SQLiteRepository(AbstractRepository[T]):
             con.close()
             if size > 0:
                 for i in range(size):
-                    result.append(self.get(i+1))
-            return result
+                    object_list.insert(i,self.get(i+1))
+            return object_list
 
         for attr, value in where.items():
             with sqlite3.connect(self.db_file) as con:
@@ -86,10 +86,10 @@ class SQLiteRepository(AbstractRepository[T]):
                 rowids = cur.fetchall()
                 print(rowids)
                 for rowid in rowids:
-                    result.append(self.get(rowid[0]))
+                    object_list.append(self.get(rowid[0]))
             con.commit()
             con.close()
-        return result
+        return object_list
 
     def update(self, obj: T) -> None:
         if obj.pk == 0:
@@ -100,9 +100,7 @@ class SQLiteRepository(AbstractRepository[T]):
             cur = con.cursor()
             cur.execute('PRAGMA foreign_keys = ON')
             set_clause = ', '.join(f'{key} = ?' for key in keys)
-            #print(set_clause)
             set_values = tuple(values + [obj.pk])  # Добавляем pk в конец кортежа
-            #print(set_values)
             cur.execute(f'UPDATE {self.table_name} SET {set_clause} WHERE rowid = ?', set_values)
 
         con.commit()

@@ -18,21 +18,12 @@ class MemoryRepository(AbstractRepository[T]):
         self._counter = count(1)
 
     def add(self, obj: T) -> int:
-        #if getattr(obj, 'pk', None) != 0:
-        if getattr(obj, 'pk') != -1:
-            raise ValueError(f'trying to add object with filled `pk` attribute')
+        if getattr(obj, 'pk', None) != 0:
+            raise ValueError(f'trying to add object {obj} with filled `pk` attribute')
         pk = next(self._counter)
         self._container[pk] = obj
-        if hasattr(obj,'pk'):
-            obj.pk = pk
+        obj.pk = pk
         return pk
-
-    def init_db_at_start(self, obj_list: [T]):
-        for i in range(len(obj_list)):
-            obj = obj_list[i]
-            if hasattr(obj, 'pk'):
-                obj.pk = -1
-            self.add(obj)
 
     def get(self, pk: int) -> T | None:
         return self._container.get(pk)

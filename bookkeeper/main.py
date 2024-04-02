@@ -2,9 +2,9 @@ import sqlite3
 
 from bookkeeper.models.budget import Budget
 from bookkeeper.models.category import Category
+from bookkeeper.repository.memory_repository import MemoryRepository
 from bookkeeper.repository.sqlite_repository import SQLiteRepository
 from bookkeeper.models.expense import Expense
-from bookkeeper.view.view import View
 
 
 def countSpents(self, budget: Budget):
@@ -18,19 +18,20 @@ def countSpents(self, budget: Budget):
     budget.moneyAmount = sum
 
 
-def update_view():
-    expense_database = SQLRepoExpense.get_all()
-
-
 SQLRepoExpense = SQLiteRepository('db_file_expense.db', Expense)
 con = sqlite3.connect('db_file_expense.db')
 cursor = con.cursor()
-cursor.execute('CREATE TABLE IF NOT EXISTS expense(pk INTEGER, added_date TEXT, expense_date TEXT, category TEXT, amount REAL, comment TEXT)')
+cursor.execute('CREATE TABLE IF NOT EXISTS expense(expense_date TEXT, category TEXT, amount REAL, comment TEXT)') #expense_date TEXT
 con.commit()
 con.close()
 
+expense_database = SQLRepoExpense.get_all()
+
 SQLRepoBudget = SQLiteRepository('db_file_budget.db', Budget)
-budget_list = SQLRepoBudget.get_all()
+
+budget_list = MemoryRepository()
+budget_list.init_db_at_start(SQLRepoBudget.get_all())
 
 SQLRepoCategory = SQLiteRepository('db_file_category.db', Category)
-categories_list = SQLRepoCategory.get_all()
+categories_list = MemoryRepository()
+categories_list.init_db_at_start(SQLRepoCategory.get_all())

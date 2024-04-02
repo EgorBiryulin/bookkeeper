@@ -2,7 +2,8 @@
 Описан класс, представляющий расходную операцию
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from datetime import datetime
 
 
 @dataclass(slots=True)
@@ -16,10 +17,17 @@ class Expense:
     amount - сумма
     comment - комментарий
     """
-    pk: int
-    added_date: str
-    expense_date: str
-    category: str
-    amount: float
-    comment: str
 
+    amount: int = 0
+    category: int = 0
+    #expense_date: datetime = field(default_factory=datetime.now)
+    added_date: datetime = field(default_factory=datetime.now)
+    comment: str = ''
+    pk: int = 0
+
+    #def __init__(self, expense_date: str, category: str, amount: float, comment: str):
+    #    self.expense_date = expense_date
+    #    self.category = category
+    #    self.amount = amount
+    #    self.comment = comment
+    #    self.pk: int
