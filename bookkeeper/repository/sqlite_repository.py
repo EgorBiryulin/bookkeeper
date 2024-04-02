@@ -3,11 +3,9 @@
 """
 from inspect import get_annotations
 from typing import Any
-from datetime import datetime
 import sqlite3
 
 from bookkeeper.repository.abstract_repository import AbstractRepository, T
-from bookkeeper.models.budget import Budget
 
 
 class SQLiteRepository(AbstractRepository[T]):
@@ -122,13 +120,3 @@ class SQLiteRepository(AbstractRepository[T]):
 
         con.commit()
         con.close()
-
-    def countSpents(self, budget: Budget):
-        con = sqlite3.connect(self.db_file)
-        cursor = con.cursor()
-        cursor.execute(
-            f'SELECT SUM(amount) FROM {self.table_name} WHERE expense_date>{str(datetime.now() - budget.duration)[-8]}', )
-        sum = cursor.fetchone()[0]
-        con.commit()
-        con.close()
-        budget.moneyAmount = sum
