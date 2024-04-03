@@ -1,4 +1,5 @@
 import sqlite3
+import sys
 
 from PySide6 import QtWidgets
 
@@ -6,9 +7,10 @@ from bookkeeper.models.budget import Budget
 from bookkeeper.models.category import Category
 from bookkeeper.repository.memory_repository import MemoryRepository
 from bookkeeper.repository.sqlite_repository import SQLiteRepository
-from bookkeeper.models.expense import Expense
-from bookkeeper.view.view import expenses_table
 
+from bookkeeper.models.expense import Expense
+from bookkeeper.view.presenter import Bookkeeper
+from bookkeeper.view.view import View
 
 SQLRepoExpense = SQLiteRepository('db_file_expense.db', Expense)
 con = sqlite3.connect('db_file_expense.db')
@@ -28,3 +30,7 @@ budget_list.init_db_at_start(SQLRepoBudget.get_all())
 SQLRepoCategory = SQLiteRepository('db_file_category.db', Category)
 categories_list = MemoryRepository()
 categories_list.init_db_at_start(SQLRepoCategory.get_all())
+
+bookkeeper = Bookkeeper()
+bookkeeper.view.window.show()
+sys.exit(bookkeeper.view.app.exec())
