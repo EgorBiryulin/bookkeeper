@@ -6,17 +6,8 @@ from setuptools.config._validate_pyproject import ValidationError
 
 from bookkeeper.models.budget import Budget
 
-class Model():
 
-    def countSpents(self, budget: Budget):
-        con = sqlite3.connect(self.db_file)
-        cursor = con.cursor()
-        cursor.execute(f'SELECT SUM(amount) FROM {self.table_name} WHERE expense_date>{str(datetime.now() - budget.duration)[-8]}', )
-        sum = cursor.fetchone()[0]
-        con.commit()
-        con.close()
-        budget.moneyAmount = sum
-
+class Model:
 
     def set_table_data(self, data: []) -> None:
         for i, row in enumerate(data):
@@ -25,6 +16,16 @@ class Model():
                     i, j,
                     QtWidgets.QTableWidgetItem(x.capitalize())
                 )
+
+    def countSpents(self, budget: Budget):
+        con = sqlite3.connect(self.db_file)
+        cursor = con.cursor()
+        cursor.execute(f'SELECT SUM(amount) FROM {self.table_name} '
+                       f'WHERE expense_date>{str(datetime.now() - budget.duration)[-8]}', )
+        sum = cursor.fetchone()[0]
+        con.commit()
+        con.close()
+        budget.moneyAmount = sum
 
     def add_category(self):
         # получение данных из формочки

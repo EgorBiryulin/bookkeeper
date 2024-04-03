@@ -5,8 +5,8 @@ from inspect import isgenerator
 
 import pytest
 
-from bookkeeper.bookkeeper.models.category import Category
-from bookkeeper.bookkeeper.repository.memory_repository import MemoryRepository
+from bookkeeper.models.category import Category
+from bookkeeper.repository.memory_repository import MemoryRepository
 
 
 @pytest.fixture
@@ -17,7 +17,7 @@ def repo():
 def test_create_object():
     c = Category('name')
     assert c.name == 'name'
-    assert c.pk == 0
+    assert c.pk is None
     assert c.parent is None
 
     c = Category(name='name', parent=1, pk=2)

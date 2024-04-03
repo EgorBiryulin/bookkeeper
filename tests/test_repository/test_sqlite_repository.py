@@ -1,4 +1,4 @@
-from bookkeeper.bookkeeper.repository.sqlite_repository import SQLiteRepository
+from bookkeeper.repository.sqlite_repository import SQLiteRepository
 
 import pytest
 
@@ -6,7 +6,7 @@ import pytest
 @pytest.fixture
 def custom_class():
     class Custom():
-        pk: int = 0
+        pk: int = None
         ID: int = 2
         Name: str = 'orange'
         Value: float = 50
@@ -23,7 +23,7 @@ def custom_class():
 @pytest.fixture
 def custom_obj():
     class Obj():
-        pk: int = 0
+        pk: int = None
         ID: int = 2
         Name: str = 'orange'
         Value: float = 50
