@@ -100,7 +100,7 @@ class SQLiteRepository(AbstractRepository[T]):
             pass
         else:
             raise ValueError(f'trying to update object {obj} without `pk` attribute')
-        if obj.pk == 0:
+        if getattr(obj, 'pk') is None:
             raise ValueError('attempt to update object with unknown primary key')
         keys = list(self.fields.keys())
         values = [getattr(obj, x) for x in self.fields]

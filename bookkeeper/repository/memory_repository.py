@@ -54,8 +54,8 @@ class MemoryRepository(AbstractRepository[T]):
         if hasattr(obj, 'pk'):
             pass
         else:
-            raise ValueError(f'trying to update object {obj} without `pk` attribute')
-        if obj.pk == 0:
+            raise ValueError(f'trying to update object without `pk` attribute')
+        if getattr(obj, 'pk') is None:
             raise ValueError('attempt to update object with unknown primary key')
         self._container[obj.pk] = obj
 

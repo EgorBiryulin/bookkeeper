@@ -91,7 +91,4 @@ def test_get_all_with_condition(repo, custom_class):
         repo.add(o)
         objects.append(o)
     assert repo.get_all({'ID': '0'}) == [objects[0]]
-    #repo_get = repo.get_all({'Name': 'test'})
-    #print(repo_get)
-    #print(objects)
     assert repo.get_all({'Name': 'test'}) == objects
