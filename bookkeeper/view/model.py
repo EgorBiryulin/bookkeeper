@@ -5,9 +5,20 @@ from PySide6.QtWidgets import QMessageBox
 from setuptools.config._validate_pyproject import ValidationError
 
 from bookkeeper.models.budget import Budget
-
+from bookkeeper.models.category import Category
+from bookkeeper.repository.memory_repository import MemoryRepository
+from bookkeeper.repository.sqlite_repository import SQLiteRepository
 
 class Model:
+
+    def get_category_list_names(self, category_list: [Category]) -> []:
+        names_list = []
+        for i in range(len(category_list)):
+            if hasattr(category_list[i], 'name'):
+                names_list.append(getattr(category_list[i], 'name'))
+            else:
+                raise ValueError(f'trying to add object {category_list[i]} without `name` attribute')
+        return names_list
 
     def set_table_data(self, data: []) -> None:
         for i, row in enumerate(data):
@@ -27,16 +38,17 @@ class Model:
         con.close()
         budget.moneyAmount = sum
 
-    def add_category(self):
-        # получение данных из формочки
-        name = ...
-        parent = ...
+    def add_category_with_name_id(self, name: str, parent_id: int, categories_list_repo: MemoryRepository,
+                                  SQLRepoCategories: SQLiteRepository):
         try:
-            self.cat_adder(name, parent) # зарегистрированный ранее обработчик
+            categories_list_repo.add(Category(name, parent_id))  # зарегистрированный ранее обработчик
         except ValidationError as ex:
             QMessageBox.critical(self, 'Ошибка', str(ex))
 
-    def delete_category(self):
-        cat = ...  # определить выбранную категорию
-        del_subcats, del_expenses = self.ask_del_cat()
-        self.cat_deleter(cat, del_subcats, del_expenses)
+        SQLRepoCategories.clear_update_from_list(categories_list_repo._container.values())
+
+    def delete_category_with_id(self, delete_id: int, categories_list_repo: MemoryRepository,
+                                SQLRepoCategories: SQLiteRepository):
+        categories_list_repo.delete(delete_id)
+
+        SQLRepoCategories.clear_update_from_list(categories_list_repo._container.values())

@@ -18,10 +18,6 @@ cursor.execute('CREATE TABLE IF NOT EXISTS expense(expense_date TEXT, category T
 con.commit()
 con.close()
 
-# Репозиторий, хранящийся в памяти. Содержит список покупок
-expense_list = MemoryRepository()
-expense_list.create_db_from_list(SQLRepoExpenses.get_all())
-
 # БД (SQL), где содержится список категорий
 SQLRepoCategories = SQLiteRepository('db_file_categories.db', Category)
 con = sqlite3.connect(SQLRepoCategories.db_file)
@@ -30,10 +26,6 @@ cursor.execute('CREATE TABLE IF NOT EXISTS category(name TEXT, parent TEXT)')
 con.commit()
 con.close()
 
-# Репозиторий, хранящийся в памяти. Содержит список категорий
-categories_list = MemoryRepository()
-categories_list.create_db_from_list(SQLRepoCategories.get_all())
-
-bookkeeper = Bookkeeper()
+bookkeeper = Bookkeeper(SQLRepoExpenses,SQLRepoCategories)
 bookkeeper.view.window.show()
 sys.exit(bookkeeper.view.app.exec())

@@ -107,11 +107,8 @@ class View(AbstractView):
 
         # Элементы с взаимодействием
         # Список категорий (выпадающий список)
-        self.combobox_text = ["Продукты", "Книги", "Одежда"]
-        self.combobox_widget = QtWidgets.QComboBox()
-        for item in self.combobox_text:
-            self.combobox_widget.addItem(item)
-        self.grid_layout.addWidget(self.combobox_widget, 2, 1)
+        self.category_combobox = QtWidgets.QComboBox()
+        self.grid_layout.addWidget(self.category_combobox, 2, 1)
 
         # Строка для ввода новой категории
         self.new_category_line = QtWidgets.QLineEdit(
@@ -121,22 +118,18 @@ class View(AbstractView):
         # Кнопки
         # Кнопка редактирования списка расходов и бюджета
         self.edit_expense_button = QPushButton("Редактировать")
-        # self.edit_expense_button.clicked.connect(handler)
         self.grid_layout.addWidget(self.edit_expense_button, 0, 0, 1, 4)
 
         # Кнопка добавления расхода
         self.add_expense_button = QPushButton("Добавить расход")
-        # self.add_expense_button.clicked.connect(add_expense_handler)
         self.grid_layout.addWidget(self.add_expense_button, 1, 2)
 
         # Кнопка удаления категории
         self.delete_category_button = QtWidgets.QPushButton("Удалить категорию")
-        # self.delete_category_button.clicked.connect(handler)
         self.grid_layout.addWidget(self.delete_category_button, 2, 2)
 
         # Кнопка добавления категории
         self.add_category_button = QtWidgets.QPushButton("Новая категория")
-        # self.add_category_button.clicked.connect(handler)
         self.grid_layout.addWidget(self.add_category_button, 3, 2)
 
         self.vertical_layout.addLayout(self.grid_layout, -1)
@@ -152,3 +145,15 @@ class View(AbstractView):
 
     def register_category_adder(self, handler):
         self.add_category_button.clicked.connect(handle_error(handler))
+
+    def update_category_combobox(self, category_names_list: [str]) -> None:
+        self.category_combobox.clear()
+        self.category_combobox.addItem("")
+        for item in category_names_list:
+            self.category_combobox.addItem(item)
+
+    def get_selected_category(self) -> int:
+        return self.category_combobox.currentIndex()
+
+    def get_new_category_name(self):
+        return self.new_category_line.text()

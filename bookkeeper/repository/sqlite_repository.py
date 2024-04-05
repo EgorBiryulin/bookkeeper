@@ -128,3 +128,16 @@ class SQLiteRepository(AbstractRepository[T]):
                 raise KeyError(f'trying to delete object that does not exist')
         con.commit()
         con.close()
+
+    def clear_update_from_list(self, new_data: list[T]) -> None:
+        with sqlite3.connect(self.db_file) as con:
+            cur = con.cursor()
+            cur.execute('PRAGMA foreign_keys = ON')
+            cur.execute(f'DELETE FROM {self.table_name}')
+        con.commit()
+        con.close()
+
+        for item in new_data:
+            if hasattr(item, 'pk'):
+                setattr(item, 'pk', None)
+            self.add(item)
