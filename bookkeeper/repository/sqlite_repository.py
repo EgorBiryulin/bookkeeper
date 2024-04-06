@@ -41,8 +41,9 @@ class SQLiteRepository(AbstractRepository[T]):
                 values
             )
             obj.pk = cur.lastrowid
-        con.commit()
+            con.commit()
         con.close()
+
         return obj.pk
 
     def get(self, pk: int) -> T | None:
@@ -52,9 +53,8 @@ class SQLiteRepository(AbstractRepository[T]):
             cur.execute('PRAGMA foreign_keys = ON')
             cur.execute(f'SELECT * FROM {self.table_name} 'f'WHERE rowid = ?', (pk,))
             result = cur.fetchone()
-        con.commit()
+            con.commit()
         con.close()
-
         if result:
             result_obj: any = self.cls_type()
             setattr(result_obj, 'pk', pk)
@@ -74,7 +74,7 @@ class SQLiteRepository(AbstractRepository[T]):
                 cur.execute('PRAGMA foreign_keys = ON')
                 cur.execute(f'SELECT COUNT(*) FROM {self.table_name}')
                 size = cur.fetchone()[0]
-            con.commit()
+                con.commit()
             con.close()
             if size > 0:
                 for i in range(size):
@@ -87,10 +87,9 @@ class SQLiteRepository(AbstractRepository[T]):
                 cur.execute('PRAGMA foreign_keys = ON')
                 cur.execute(f'SELECT ROWID FROM {self.table_name} WHERE {attr} = ?', (value,))
                 rowids = cur.fetchall()
-                print(rowids)
                 for rowid in rowids:
                     result.append(self.get(rowid[0]))
-            con.commit()
+                con.commit()
             con.close()
         return result
 
@@ -110,23 +109,36 @@ class SQLiteRepository(AbstractRepository[T]):
             set_clause = ', '.join(f'{key} = ?' for key in keys)
             set_values = tuple(values + [obj.pk])  # Добавляем pk в конец кортежа
             cur.execute(f'UPDATE {self.table_name} SET {set_clause} WHERE rowid = ?', set_values)
-
-        con.commit()
+            con.commit()
         con.close()
 
     def delete(self, pk: int) -> None:
-        # Метод удаляет выбранный элемент в БД
+        # Метод удаляет выбранный элемент в БД (по индексу)
+        # Вытащить все элементы после pk и сдвинуть их на 1 влево
         with sqlite3.connect(self.db_file) as con:
             cur = con.cursor()
             cur.execute('PRAGMA foreign_keys = ON')
-            cur.execute(f'SELECT COUNT(*) FROM {self.table_name} WHERE rowid = ?', (pk,))
+            cur.execute(f'SELECT COUNT(*) FROM {self.table_name}')
+            size = cur.fetchone()[0]
+            con.commit()
+        con.close()
+
+        for i in range(pk + 1, size + 1):
+            obj = self.get(i)
+            setattr(obj, 'pk', i-1)
+            self.update(obj)
+
+        with sqlite3.connect(self.db_file) as con:
+            cur = con.cursor()
+            cur.execute('PRAGMA foreign_keys = ON')
+            cur.execute(f'SELECT COUNT(*) FROM {self.table_name} WHERE rowid = ?', (size,))
             result = cur.fetchone()[0]
             if result > 0:
                 cur.execute(f'DELETE FROM {self.table_name} '
-                            f'WHERE rowid = ?', (pk,))
+                            f'WHERE rowid = ?', (size,))
             else:
                 raise KeyError(f'trying to delete object that does not exist')
-        con.commit()
+            con.commit()
         con.close()
 
     def clear_update_from_list(self, new_data: list[T]) -> None:
@@ -134,7 +146,7 @@ class SQLiteRepository(AbstractRepository[T]):
             cur = con.cursor()
             cur.execute('PRAGMA foreign_keys = ON')
             cur.execute(f'DELETE FROM {self.table_name}')
-        con.commit()
+            con.commit()
         con.close()
 
         for item in new_data:

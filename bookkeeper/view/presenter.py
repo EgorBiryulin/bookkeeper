@@ -18,7 +18,7 @@ class Bookkeeper:
         self.SQLRepoExpenses = SQLRepoExpenses
         self.categories_list_repo = MemoryRepository()
         category_list = SQLRepoCategories.get_all()
-        self.categories_list_repo.create_db_from_list(category_list)
+        self.categories_list_repo.create_db_from_list(SQLRepoCategories.get_all())
 
         self.view = View()
         self.model = Model()
@@ -30,7 +30,7 @@ class Bookkeeper:
         self.view.register_category_adder(self.add_category)
 
         # Обновление таблицы покупок
-        # self.view.
+
         # Обновление таблицы бюджетных ограничений
 
         # Обновление списка категорий
@@ -43,35 +43,32 @@ class Bookkeeper:
             parent_id = self.view.get_selected_category()
         name = self.view.get_new_category_name()
 
+        # Проверка существования категории
         category_list = list(self.categories_list_repo._container.values())
         existing_category_names = self.model.get_category_list_names(category_list)
-
         for existing_name in existing_category_names:
             if name == existing_name:
                 raise ValidationError(f'Категория {name} уже существует')
 
-        if name == "Пиво": # Пасхалка)
-            print("Ура, я добавил Пиво в категории!!!")
-
+        # Запуск процесса добавления
         self.model.add_category_with_name_id(name, parent_id, self.categories_list_repo, self.SQLRepoCategories)
+
+        # Обновление формочки
         category_list = list(self.categories_list_repo._container.values())
-        print(category_list)
-        self.view.update_category_combobox(self.model.get_category_list_names(category_list))
+        category_list_names = self.model.get_category_list_names(category_list)
+        self.view.update_category_combobox(category_list_names)
 
     def delete_category(self) -> None:
         # получение данных из формочки
         delete_id = self.view.get_selected_category()
+
+        # Запуск процесса удаления
         self.model.delete_category_with_id(delete_id, self.categories_list_repo, self.SQLRepoCategories)
-        for i in range(len(list(self.categories_list_repo._container.values()))):
-            if i > delete_id-1:
-                new_obj = self.categories_list_repo.get(i)
-                setattr(new_obj, 'pk', i+1)
-                self.categories_list_repo.update(i,new_obj)
 
+        # Обновление формочки
         category_list = list(self.categories_list_repo._container.values())
-        print(category_list)
-        self.view.update_category_combobox(self.model.get_category_list_names(category_list))
-
+        category_list_names = self.model.get_category_list_names(category_list)
+        self.view.update_category_combobox(category_list_names)
 
     def modify_expenses_budget_list(self) -> None:
         print("Ну давай, модифицируй покупки")
@@ -80,6 +77,8 @@ class Bookkeeper:
 
     def add_expense(self) -> None:
         print("Я купил Пива")
+        #if name == "Пиво": # Пасхалка)
+        #    print("Ура, я добавил Пиво в категории!!!")
         # if name in [c.name for c in self.cats]:
         #    raise ValidationError(f'Категория {name} уже существует')
 

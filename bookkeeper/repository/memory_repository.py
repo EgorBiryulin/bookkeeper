@@ -34,8 +34,7 @@ class MemoryRepository(AbstractRepository[T]):
         # Метод метод создает БД из набора элементов
         for i in range(len(obj_list)):
             obj = obj_list[i]
-            if hasattr(obj, 'pk'):
-                setattr(obj, 'pk', None)
+            setattr(obj, 'pk', None)
             self.add(obj)
 
     def get(self, pk: int) -> T | None:
@@ -60,5 +59,14 @@ class MemoryRepository(AbstractRepository[T]):
         self._container[obj.pk] = obj
 
     def delete(self, pk: int) -> None:
-        # Метод удаляет выбранный элемент в БД (по индексу)
+        # Метод удаляет выбранный элемент в БД (по индексу) и обновляет counter,
+        # чтобы pk всегда шли в последовательности натуральных чисел
         self._container.pop(pk)
+        new_counter_value = next(self._counter) - 1
+        self._counter = count(new_counter_value)
+
+        # Вытащить все после pk и сдвинуть их на 1 влево
+        for i in range(pk+1, len(self._container)+2):
+            setattr(self._container[i], 'pk', i-1)
+            obj = self._container.pop(i)
+            self._container[i-1] = obj

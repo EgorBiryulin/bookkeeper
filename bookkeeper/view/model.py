@@ -28,6 +28,35 @@ class Model:
                     QtWidgets.QTableWidgetItem(x.capitalize())
                 )
 
+    def add_category_with_name_id(self, name: str, parent_id: int, categories_list_repo: MemoryRepository,
+                                  sql_repo: SQLiteRepository):
+        # Добавление категории
+        try:
+            categories_list_repo.add(Category(name, parent_id))
+        except ValidationError as ex:
+            QMessageBox.critical(self, 'Ошибка', str(ex))
+
+        # Обновление формочки
+        sql_repo.clear_update_from_list(categories_list_repo._container.values())
+
+    def delete_category_with_id(self, delete_id: int, categories_list_repo: MemoryRepository,
+                                sql_repo: SQLiteRepository):
+        # Удаляет категорию по ID. Присваивает детям удаляемой категории ее родителя
+        delete_obj = categories_list_repo.get(delete_id)
+        delete_obj_parent = delete_obj.parent
+        delete_obj_pk = delete_obj.pk
+
+        # Поиск и обновление родителей категорий
+        update_cat = categories_list_repo.get_all({"parent": delete_obj_pk})
+        for obj in update_cat:
+            setattr(obj, 'parent', delete_obj_parent)
+            categories_list_repo.update(obj)
+            sql_repo.update(obj)
+
+        # Удаление категории из репозиториев
+        categories_list_repo.delete(delete_id)
+        sql_repo.delete(delete_id)
+
     def countSpents(self, budget: Budget):
         con = sqlite3.connect(self.db_file)
         cursor = con.cursor()
@@ -38,17 +67,4 @@ class Model:
         con.close()
         budget.moneyAmount = sum
 
-    def add_category_with_name_id(self, name: str, parent_id: int, categories_list_repo: MemoryRepository,
-                                  SQLRepoCategories: SQLiteRepository):
-        try:
-            categories_list_repo.add(Category(name, parent_id))  # зарегистрированный ранее обработчик
-        except ValidationError as ex:
-            QMessageBox.critical(self, 'Ошибка', str(ex))
 
-        SQLRepoCategories.clear_update_from_list(categories_list_repo._container.values())
-
-    def delete_category_with_id(self, delete_id: int, categories_list_repo: MemoryRepository,
-                                SQLRepoCategories: SQLiteRepository):
-        categories_list_repo.delete(delete_id)
-
-        SQLRepoCategories.clear_update_from_list(categories_list_repo._container.values())
