@@ -39,7 +39,7 @@ class Bookkeeper:
         self.view.register_budget_updater(self.update_budget_plan)
         self.view.register_expenses_adder(self.add_expense)
         self.view.register_category_deleter(self.delete_category)
-        self.view.register_expenses_budget_modifier(self.delete_expense)
+        self.view.register_expenses_deleter(self.delete_expense)
         self.view.register_category_adder(self.add_category)
 
         # Обновление таблицы покупок
@@ -68,11 +68,11 @@ class Bookkeeper:
 
     def update_expenses(self) -> None:
         expenses = self.expense_list._container.values()
+        self.view.expenses_table.clear()
         for i in range(0, len(expenses)):
             obj = self.expense_list.get(i+1)
             obj_category = self.categories_list_repo.get(int(obj.category))
             obj_category = obj_category.name
-            print(obj)
             self.view.expenses_table.setItem(i, 0, QtWidgets.QTableWidgetItem(obj.expense_date))
             self.view.expenses_table.setItem(i, 1, QtWidgets.QTableWidgetItem(str(obj.amount)))
             self.view.expenses_table.setItem(i, 2, QtWidgets.QTableWidgetItem(obj_category))
@@ -108,9 +108,13 @@ class Bookkeeper:
         self.update_expenses()
 
     def delete_expense(self) -> None:
-        print("Все, запомнил, отвали")
-        # self.category_repository.update(cat)
-        # self.view.set_category_list(self.cats)
+        delete_id = int(self.view.delete_expense_number.text())
+        self.expense_list.delete(delete_id)
+        self.SQLRepoExpenses.delete(delete_id)
+
+        self.update_budget()
+        self.update_expenses()
+
 
     def add_category(self) -> None:
         # получение данных из формочки
