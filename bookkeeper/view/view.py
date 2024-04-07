@@ -89,59 +89,102 @@ class View(AbstractView):
 
         # Настройка виджетов, с которыми будет взаимодействовать пользователь
         # Подписи
+        # Добавить расход
+        delete_expense_label = QtWidgets.QLabel("Добавить расход:")
+        self.grid_layout.addWidget(delete_expense_label, 1, 0, 1, 3)
+
         # Подпись строки вводимой денежной суммы
-        self.sum_widget = QtWidgets.QLabel("Сумма")
-        self.grid_layout.addWidget(self.sum_widget, 1, 0)
+        sum_widget_label = QtWidgets.QLabel("Сумма")
+        self.grid_layout.addWidget(sum_widget_label, 2, 0)
 
         # Подпись списка категорий
-        self.category_widget = QtWidgets.QLabel("Категория")
-        self.grid_layout.addWidget(self.category_widget, 2, 0)
+        expenses_comment_widget_label = QtWidgets.QLabel("Комментарий")
+        self.grid_layout.addWidget(expenses_comment_widget_label, 3, 0)
 
         # Подпись списка категорий
-        self.category_widget = QtWidgets.QLabel("Новая категория")
-        self.grid_layout.addWidget(self.category_widget, 3, 0)
+        category_widget_label = QtWidgets.QLabel("Категория")
+        self.grid_layout.addWidget(category_widget_label, 4, 0)
+
+        # Редактировать список категорий и расходов
+        redactor_label = QtWidgets.QLabel("Редактировать список категорий и расходов:")
+        self.grid_layout.addWidget(redactor_label, 5, 0, 1, 3)
+
+        # Подпись комментария
+        delete_expense_label = QtWidgets.QLabel("Удалить расход по номеру")
+        self.grid_layout.addWidget(delete_expense_label, 6, 0)
+
+        # Подпись комментария
+        category_new_widget_label = QtWidgets.QLabel("Новая категория")
+        self.grid_layout.addWidget(category_new_widget_label, 7, 0)
+
+        # Строки для ввода номеров и т.д.
+        # Cтрока нового бюджетного ограничения
+        self.new_budget_line = QtWidgets.QLineEdit('0')
+        self.grid_layout.addWidget(self.new_budget_line, 0, 1)
 
         # Cтрока вводимой денежной суммы
         self.expense_money_line = QtWidgets.QLineEdit('0')
-        self.grid_layout.addWidget(self.expense_money_line, 1, 1)
+        self.grid_layout.addWidget(self.expense_money_line, 2, 1)
 
-        # Элементы с взаимодействием
-        # Список категорий (выпадающий список)
-        self.category_combobox = QtWidgets.QComboBox()
-        self.grid_layout.addWidget(self.category_combobox, 2, 1)
+        # Cтрока ввода комментария
+        self.comment_line = QtWidgets.QLineEdit('Комментарий')
+        self.grid_layout.addWidget(self.comment_line, 3, 1)
+
+        # Cтрока ввода удаляемого расхода
+        self.delete_expense_number = QtWidgets.QLineEdit('Число от 1')
+        self.grid_layout.addWidget(self.delete_expense_number, 6, 1)
 
         # Строка для ввода новой категории
         self.new_category_line = QtWidgets.QLineEdit(
             'Новая категория (родительской будет считаться категория, выбранная в списке)')
-        self.grid_layout.addWidget(self.new_category_line, 3, 1)
+        self.grid_layout.addWidget(self.new_category_line, 7, 1)
+
+        # Элементы с взаимодействием
+        # Список бюджетов (выпадающий список)
+        self.budget_combobox = QtWidgets.QComboBox()
+        self.budget_combobox.addItem("День")
+        self.budget_combobox.addItem("Неделя")
+        self.budget_combobox.addItem("Месяц")
+        self.grid_layout.addWidget(self.budget_combobox, 0, 0)
+
+        # Список категорий (выпадающий список)
+        self.category_combobox = QtWidgets.QComboBox()
+        self.grid_layout.addWidget(self.category_combobox, 4, 1)
 
         # Кнопки
-        # Кнопка редактирования списка расходов и бюджета
-        self.edit_expense_button = QPushButton("Редактировать")
-        self.grid_layout.addWidget(self.edit_expense_button, 0, 0, 1, 4)
+        # Кнопка обновления бюджета
+        self.update_budget_button = QPushButton("Обновить бюджетное ограничение")
+        self.grid_layout.addWidget(self.update_budget_button, 0, 2)
 
         # Кнопка добавления расхода
         self.add_expense_button = QPushButton("Добавить расход")
-        self.grid_layout.addWidget(self.add_expense_button, 1, 2)
+        self.grid_layout.addWidget(self.add_expense_button, 2, 2, 2, 1)
 
         # Кнопка удаления категории
         self.delete_category_button = QtWidgets.QPushButton("Удалить категорию")
-        self.grid_layout.addWidget(self.delete_category_button, 2, 2)
+        self.grid_layout.addWidget(self.delete_category_button, 4, 2)
+
+        # Кнопка удаления расхода
+        self.delete_expense_button = QtWidgets.QPushButton("Удалить расход")
+        self.grid_layout.addWidget(self.delete_expense_button, 6, 2)
 
         # Кнопка добавления категории
         self.add_category_button = QtWidgets.QPushButton("Новая категория")
-        self.grid_layout.addWidget(self.add_category_button, 3, 2)
+        self.grid_layout.addWidget(self.add_category_button, 7, 2)
 
         self.vertical_layout.addLayout(self.grid_layout, -1)
 
-    def register_expenses_budget_modifier(self, handler):
-        self.edit_expense_button.clicked.connect(handle_error(handler))
+    def register_budget_updater(self, handler):
+        self.update_budget_button.clicked.connect(handle_error(handler))
 
     def register_expenses_adder(self, handler):
         self.add_expense_button.clicked.connect(handle_error(handler))
 
     def register_category_deleter(self, handler):
         self.delete_category_button.clicked.connect(handle_error(handler))
+
+    def register_expenses_deleter(self, handler):
+        self.delete_expense_button.clicked.connect(handle_error(handler))
 
     def register_category_adder(self, handler):
         self.add_category_button.clicked.connect(handle_error(handler))
@@ -151,6 +194,12 @@ class View(AbstractView):
         self.category_combobox.addItem("")
         for item in category_names_list:
             self.category_combobox.addItem(item)
+
+    def get_selected_budget(self) -> int:
+        return self.budget_combobox.currentIndex()
+
+    def get_new_budget_plan(self) -> int:
+        return int(self.new_budget_line.text())
 
     def get_selected_category(self) -> int:
         return self.category_combobox.currentIndex()

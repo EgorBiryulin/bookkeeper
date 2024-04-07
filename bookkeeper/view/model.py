@@ -9,6 +9,7 @@ from bookkeeper.models.category import Category
 from bookkeeper.repository.memory_repository import MemoryRepository
 from bookkeeper.repository.sqlite_repository import SQLiteRepository
 
+
 class Model:
 
     def get_category_list_names(self, category_list: [Category]) -> []:
@@ -57,12 +58,14 @@ class Model:
         categories_list_repo.delete(delete_id)
         sql_repo.delete(delete_id)
 
-    def countSpents(self, budget: Budget):
-        con = sqlite3.connect(self.db_file)
-        cursor = con.cursor()
-        cursor.execute(f'SELECT SUM(amount) FROM {self.table_name} '
-                       f'WHERE expense_date>{str(datetime.now() - budget.duration)[-8]}', )
-        sum = cursor.fetchone()[0]
-        con.commit()
+    def count_spents(self, budget: Budget, sql_db: SQLiteRepository) -> float:
+        with sqlite3.connect(sql_db.db_file) as con:
+            cur = con.cursor()
+            cur.execute('PRAGMA foreign_keys = ON')
+            cur.execute(f'SELECT SUM(amount) FROM {sql_db.table_name} '
+                        f'WHERE expense_date>"{str(datetime.now() - budget.duration)[:-7]}"', )
+            summ = cur.fetchone()[0]
+            print(str(datetime.now() - budget.duration)[:-7])
+            con.commit()
         con.close()
-        budget.moneyAmount = sum
+        return summ
