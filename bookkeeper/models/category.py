@@ -14,7 +14,8 @@ class Category:
 
     # Параметры модели:
     # name - название категории расходов;
-    # parent - ссылку на родителя (id родителя), у категорий верхнего уровня parent = None;
+    # parent - ссылку на родителя (id родителя),
+    # у категорий верхнего уровня parent = None;
     # pk - идентификатор категории.
 
     name: str = ""
@@ -34,13 +35,15 @@ class Category:
             return None
         return repo.get(self.parent)
 
-    def get_all_parents(self, repo: AbstractRepository['Category']) -> Iterator['Category']:
+    def get_all_parents(self, repo: AbstractRepository['Category'])\
+            -> Iterator['Category']:
         # Метод получает и возвращает все категории верхнего уровня в иерархии.
 
         # Параметры:
         # repo - репозиторий для получения объектов.
 
-        # Возвращает (Yields) объекты класса Category от родителя и выше до категории верхнего уровня.
+        # Возвращает (Yields) объекты класса Category
+        # от родителя и выше до категории верхнего уровня.
 
         parent = self.get_parent(repo)
         if parent is None:
@@ -48,7 +51,8 @@ class Category:
         yield parent
         yield from parent.get_all_parents(repo)
 
-    def get_subcategories(self, repo: AbstractRepository['Category']) -> Iterator['Category']:
+    def get_subcategories(self, repo: AbstractRepository['Category'])\
+            -> Iterator['Category']:
         # Метод получает и возвращает все подкатегории из иерархии,
         # т.е. непосредственные подкатегории данной, все их подкатегории и т.д.
 
