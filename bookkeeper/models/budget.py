@@ -14,5 +14,5 @@ class Budget:
     # duration - длительность промежутка подсчетов,
     # отсчитывается назад от текущего момента времени.
 
-    plan: float
     duration: timedelta
+    plan: float = 1000

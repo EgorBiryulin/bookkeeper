@@ -66,5 +66,3 @@ class Model:
         con.commit()
         con.close()
         budget.moneyAmount = sum
-
-
