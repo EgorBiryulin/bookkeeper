@@ -5,7 +5,7 @@ import pytest
 
 @pytest.fixture
 def custom_class():
-    class Custom():
+    class Custom:
         pk: int = None
 
     return Custom
@@ -41,7 +41,7 @@ def test_cannot_add_without_pk(repo):
         repo.add(0)
 
 
-def test_cannot_delete_unexistent(repo):
+def test_cannot_delete_nonexistent(repo):
     with pytest.raises(KeyError):
         repo.delete(1)
 
@@ -53,7 +53,7 @@ def test_cannot_update_without_pk(repo, custom_class):
 
 
 def test_get_all(repo, custom_class):
-    objects = [custom_class() for i in range(5)]
+    objects = [custom_class() for _ in range(5)]
     for o in objects:
         repo.add(o)
     assert repo.get_all() == objects

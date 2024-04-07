@@ -1,3 +1,5 @@
+import sqlite3
+
 from bookkeeper.repository.sqlite_repository import SQLiteRepository
 
 import pytest
@@ -5,7 +7,7 @@ import pytest
 
 @pytest.fixture
 def custom_class():
-    class Custom():
+    class Custom:
         pk: int = None
         ID: int = 2
         Name: str = 'orange'
@@ -22,7 +24,7 @@ def custom_class():
 
 @pytest.fixture
 def custom_obj():
-    class Obj():
+    class Obj:
         pk: int = None
         ID: int = 2
         Name: str = 'orange'
@@ -34,6 +36,11 @@ def custom_obj():
 @pytest.fixture
 def custom_db_file():
     db_file = 'db_file.db'
+    con = sqlite3.connect(db_file)
+    cursor = con.cursor()
+    cursor.execute(f'CREATE TABLE IF NOT EXISTS custom(ID INTEGER, name STR, Value REAL)')
+    con.commit()
+    con.close()
     return db_file
 
 
@@ -73,15 +80,16 @@ def test_cannot_delete_unexistent(repo):
 
 
 def test_get_all(repo, custom_class):
-    objects = [custom_class() for i in range(5)]
+    objects = [custom_class() for _ in range(5)]
     for o in objects:
         repo.add(o)
     obj = repo.get_all()
     print(objects)
     print(obj)
     assert obj == objects
-    for o in objects:
+    for _ in range(5):
         repo.delete(1)
+
 
 def test_get_all_with_condition(repo, custom_class):
     objects = []
@@ -94,5 +102,5 @@ def test_get_all_with_condition(repo, custom_class):
     assert repo.get_all({'ID': '0'}) == [objects[0]]
     assert repo.get_all({'Name': 'test'}) == objects
 
-    for o in objects:
+    for _ in range(5):
         repo.delete(1)

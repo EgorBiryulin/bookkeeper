@@ -26,6 +26,10 @@ cursor.execute('CREATE TABLE IF NOT EXISTS category(name TEXT, parent TEXT)')
 con.commit()
 con.close()
 
-bookkeeper = Bookkeeper(SQLRepoExpenses,SQLRepoCategories)
+bookkeeper = Bookkeeper(SQLRepoExpenses, SQLRepoCategories)
 bookkeeper.view.window.show()
 sys.exit(bookkeeper.view.app.exec())
+
+# Оценка pylint: poetry run pylint bookkeeper
+# Проверка кода с помощью тестов: poetry run pytest
+# Проверка кода на покрытие тестами: poetry run pytest --cov
