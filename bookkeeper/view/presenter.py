@@ -98,7 +98,8 @@ class Bookkeeper:
         delete_id = self.view.get_selected_category()
 
         # Запуск процесса удаления
-        self.model.delete_category_with_id(delete_id, self.categories_list_repo, self.SQLRepoCategories)
+        self.model.delete_category_with_id(delete_id, self.categories_list_repo, self.SQLRepoCategories,
+                                           self.expense_list, self.SQLRepoExpenses)
 
         # Обновление формочки
         category_list = list(self.categories_list_repo._container.values())
@@ -114,7 +115,6 @@ class Bookkeeper:
 
         self.update_budget()
         self.update_expenses()
-
 
     def add_category(self) -> None:
         # получение данных из формочки

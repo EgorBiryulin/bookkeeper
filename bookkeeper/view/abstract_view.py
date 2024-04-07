@@ -1,6 +1,4 @@
-from typing import Protocol, Callable
-
-from bookkeeper.models.category import Category
+from typing import Protocol
 
 
 class AbstractView(Protocol):

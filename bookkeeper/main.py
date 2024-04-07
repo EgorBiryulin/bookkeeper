@@ -14,7 +14,7 @@ SQLRepoExpenses = SQLiteRepository('db_file_expenses.db', Expense)
 con = sqlite3.connect(SQLRepoExpenses.db_file)
 cursor = con.cursor()
 cursor.execute('CREATE TABLE IF NOT EXISTS expense(expense_date TEXT, added_date TEXT, '
-               'category TEXT, amount REAL, comment TEXT)')
+               'category INTEGER, amount REAL, comment TEXT)')
 con.commit()
 con.close()
 
@@ -22,7 +22,7 @@ con.close()
 SQLRepoCategories = SQLiteRepository('db_file_categories.db', Category)
 con = sqlite3.connect(SQLRepoCategories.db_file)
 cursor = con.cursor()
-cursor.execute('CREATE TABLE IF NOT EXISTS category(name TEXT, parent TEXT)')
+cursor.execute('CREATE TABLE IF NOT EXISTS category(name TEXT, parent INTEGER)')
 con.commit()
 con.close()
 

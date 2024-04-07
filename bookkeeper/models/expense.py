@@ -1,8 +1,7 @@
 # Описан класс, представляющий расходную операцию
 
 
-from dataclasses import dataclass, field
-from datetime import datetime
+from dataclasses import dataclass
 
 
 @dataclass(slots=True)
