@@ -1,8 +1,9 @@
 from PySide6 import QtWidgets
 from setuptools.config._validate_pyproject import ValidationError
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 from bookkeeper.models.budget import Budget
+from bookkeeper.models.expense import Expense
 from bookkeeper.repository.memory_repository import MemoryRepository
 from bookkeeper.view.view import View
 from bookkeeper.view.model import Model
@@ -71,14 +72,26 @@ class Bookkeeper:
             obj = self.expense_list.get(i+1)
             obj_category = self.categories_list_repo.get(int(obj.category))
             obj_category = obj_category.name
+            print(obj)
             self.view.expenses_table.setItem(i, 0, QtWidgets.QTableWidgetItem(obj.expense_date))
             self.view.expenses_table.setItem(i, 1, QtWidgets.QTableWidgetItem(str(obj.amount)))
             self.view.expenses_table.setItem(i, 2, QtWidgets.QTableWidgetItem(obj_category))
             self.view.expenses_table.setItem(i, 3, QtWidgets.QTableWidgetItem(obj.comment))
 
     def add_expense(self) -> None:
+        new_expense_amount = float(self.view.expense_money_line.text())
+        new_expense_comment = self.view.comment_line.text()
+        new_expense_category = self.view.get_selected_category()
+        new_expense_date = str(datetime.now())[:-7]
+        new_expense = Expense(expense_date=new_expense_date, added_date=new_expense_date,
+                              category=new_expense_category, amount=new_expense_amount,
+                              comment=new_expense_comment)
+        self.expense_list.add(new_expense)
+        setattr(new_expense, 'pk', None)
+        self.SQLRepoExpenses.add(new_expense)
 
         self.update_expenses()
+        self.update_budget()
 
     def delete_category(self) -> None:
         # получение данных из формочки
