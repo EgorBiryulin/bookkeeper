@@ -107,6 +107,7 @@ class Bookkeeper:
         self.view.update_category_combobox(category_list_names)
 
         self.update_expenses()
+        self.update_budget()
 
     def delete_expense(self) -> None:
         delete_id = int(self.view.delete_expense_number.text())
