@@ -34,7 +34,6 @@ def custom_obj():
 @pytest.fixture
 def custom_db_file():
     db_file = 'db_file.db'
-
     return db_file
 
 
@@ -70,7 +69,7 @@ def test_cannot_add_without_pk(repo):
 
 def test_cannot_delete_unexistent(repo):
     with pytest.raises(KeyError):
-        repo.delete(1)
+        repo.delete(1000)
 
 
 def test_get_all(repo, custom_class):
@@ -81,6 +80,8 @@ def test_get_all(repo, custom_class):
     print(objects)
     print(obj)
     assert obj == objects
+    for o in objects:
+        repo.delete(1)
 
 def test_get_all_with_condition(repo, custom_class):
     objects = []
@@ -92,3 +93,6 @@ def test_get_all_with_condition(repo, custom_class):
         objects.append(o)
     assert repo.get_all({'ID': '0'}) == [objects[0]]
     assert repo.get_all({'Name': 'test'}) == objects
+
+    for o in objects:
+        repo.delete(1)

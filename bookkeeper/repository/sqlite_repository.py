@@ -115,6 +115,20 @@ class SQLiteRepository(AbstractRepository[T]):
     def delete(self, pk: int) -> None:
         # Метод удаляет выбранный элемент в БД (по индексу)
         # Вытащить все элементы после pk и сдвинуть их на 1 влево
+
+        with sqlite3.connect(self.db_file) as con:
+            cur = con.cursor()
+            cur.execute('PRAGMA foreign_keys = ON')
+            cur.execute(f'SELECT COUNT(*) FROM {self.table_name} WHERE rowid = ?', (pk,))
+            result = cur.fetchone()[0]
+            con.commit()
+        con.close()
+
+        if result > 0:
+            pass
+        else:
+            raise KeyError(f'trying to delete object that does not exist')
+
         with sqlite3.connect(self.db_file) as con:
             cur = con.cursor()
             cur.execute('PRAGMA foreign_keys = ON')
@@ -131,13 +145,8 @@ class SQLiteRepository(AbstractRepository[T]):
         with sqlite3.connect(self.db_file) as con:
             cur = con.cursor()
             cur.execute('PRAGMA foreign_keys = ON')
-            cur.execute(f'SELECT COUNT(*) FROM {self.table_name} WHERE rowid = ?', (size,))
-            result = cur.fetchone()[0]
-            if result > 0:
-                cur.execute(f'DELETE FROM {self.table_name} '
-                            f'WHERE rowid = ?', (size,))
-            else:
-                raise KeyError(f'trying to delete object that does not exist')
+            cur.execute(f'DELETE FROM {self.table_name} '
+                        f'WHERE rowid = ?', (size,))
             con.commit()
         con.close()
 

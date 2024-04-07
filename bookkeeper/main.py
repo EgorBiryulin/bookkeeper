@@ -13,7 +13,8 @@ from bookkeeper.view.presenter import Bookkeeper
 SQLRepoExpenses = SQLiteRepository('db_file_expenses.db', Expense)
 con = sqlite3.connect(SQLRepoExpenses.db_file)
 cursor = con.cursor()
-cursor.execute('CREATE TABLE IF NOT EXISTS expense(expense_date TEXT, category TEXT, amount REAL, comment TEXT)')
+cursor.execute('CREATE TABLE IF NOT EXISTS expense(expense_date TEXT, added_date TEXT, '
+               'category TEXT, amount REAL, comment TEXT)')
 con.commit()
 con.close()
 
