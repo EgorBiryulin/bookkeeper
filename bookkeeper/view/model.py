@@ -41,22 +41,29 @@ class Model:
         sql_repo.clear_update_from_list(categories_list_repo._container.values())
 
     def delete_category_with_id(self, delete_id: int, categories_list_repo: MemoryRepository,
-                                sql_repo: SQLiteRepository):
+                                categories_sql_repo: SQLiteRepository, expenses_list_repo: MemoryRepository,
+                                expenses_sql_repo: SQLiteRepository):
         # Удаляет категорию по ID. Присваивает детям удаляемой категории ее родителя
         delete_obj = categories_list_repo.get(delete_id)
-        delete_obj_parent = delete_obj.parent
+        delete_obj_parent_pk = delete_obj.parent
         delete_obj_pk = delete_obj.pk
 
         # Поиск и обновление родителей категорий
         update_cat = categories_list_repo.get_all({"parent": delete_obj_pk})
         for obj in update_cat:
-            setattr(obj, 'parent', delete_obj_parent)
+            setattr(obj, 'parent', delete_obj_parent_pk)
             categories_list_repo.update(obj)
-            sql_repo.update(obj)
+            categories_sql_repo.update(obj)
+
+        update_expenses = expenses_list_repo.get_all({"parent": delete_obj_pk})
+        for obj in update_expenses:
+            setattr(obj, 'parent', delete_obj_parent_pk)
+            expenses_list_repo.update(obj)
+            expenses_sql_repo.update(obj)
 
         # Удаление категории из репозиториев
         categories_list_repo.delete(delete_id)
-        sql_repo.delete(delete_id)
+        categories_sql_repo.delete(delete_id)
 
     def count_spents(self, budget: Budget, sql_db: SQLiteRepository) -> float:
         with sqlite3.connect(sql_db.db_file) as con:
@@ -65,7 +72,6 @@ class Model:
             cur.execute(f'SELECT SUM(amount) FROM {sql_db.table_name} '
                         f'WHERE expense_date>"{str(datetime.now() - budget.duration)[:-7]}"', )
             summ = cur.fetchone()[0]
-            print(str(datetime.now() - budget.duration)[:-7])
             con.commit()
         con.close()
         return summ

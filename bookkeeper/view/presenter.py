@@ -42,6 +42,7 @@ class Bookkeeper:
         self.view.register_category_adder(self.add_category)
 
         # Обновление таблицы покупок
+        self.update_expenses()
 
         # Обновление таблицы бюджетных ограничений
         self.update_budget()
@@ -64,17 +65,20 @@ class Bookkeeper:
             self.view.budget_table.setItem(i, 1, QtWidgets.QTableWidgetItem(
                 str(self.budget_list[i].plan)))
 
-    def add_expense(self) -> None:
-        print("Я купил Пива")
-        #if name == "Пиво": # Пасхалка)
-        #    print("Ура, я добавил Пиво в категории!!!")
-        # if name in [c.name for c in self.cats]:
-        #    raise ValidationError(f'Категория {name} уже существует')
+    def update_expenses(self) -> None:
+        expenses = self.expense_list._container.values()
+        for i in range(0, len(expenses)):
+            obj = self.expense_list.get(i+1)
+            obj_category = self.categories_list_repo.get(int(obj.category))
+            obj_category = obj_category.name
+            self.view.expenses_table.setItem(i, 0, QtWidgets.QTableWidgetItem(obj.expense_date))
+            self.view.expenses_table.setItem(i, 1, QtWidgets.QTableWidgetItem(str(obj.amount)))
+            self.view.expenses_table.setItem(i, 2, QtWidgets.QTableWidgetItem(obj_category))
+            self.view.expenses_table.setItem(i, 3, QtWidgets.QTableWidgetItem(obj.comment))
 
-        # cat = Category(name, parent)
-        # self.category_repository.add(cat)
-        # self.cats.append(cat)
-        # self.view.set_category_list(self.cats)
+    def add_expense(self) -> None:
+
+        self.update_expenses()
 
     def delete_category(self) -> None:
         # получение данных из формочки
@@ -87,6 +91,8 @@ class Bookkeeper:
         category_list = list(self.categories_list_repo._container.values())
         category_list_names = self.model.get_category_list_names(category_list)
         self.view.update_category_combobox(category_list_names)
+
+        self.update_expenses()
 
     def delete_expense(self) -> None:
         print("Все, запомнил, отвали")

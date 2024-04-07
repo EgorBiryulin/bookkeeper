@@ -82,6 +82,7 @@ class View(AbstractView):
         self.budget_table_header_vert.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
         self.budget_table_header_vert.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
         self.budget_table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        self.budget_table.setMaximumHeight(104)
         self.vertical_layout.addWidget(self.budget_table)
 
         # Создание сетки для расположения элементов окна
